@@ -3,14 +3,18 @@ using UnityEngine;
 using UnityEngine.AI;
 public class EnemyAI : MonoBehaviour
 {
+    public enum enemyState
+    {
+        Idle, Wandering, Chasing
+    };
 
     private NavMeshAgent agent;
     private Transform player;
     private float detectionRange = 10f;
     public float wanderRadius = 5f;
-    public float wanderInterval = 3f;
+    public float wanderInterval = 10f;
     private float wanderTimer;
-    private bool isInvestigating = false;
+    //private bool isInvestigating = false;
     private Renderer rend;
     public LayerMask enemyMask;
     private Animator animator;
@@ -20,6 +24,7 @@ public class EnemyAI : MonoBehaviour
     private AudioClip gargle2;
     private AudioClip gargle3;
     private bool isGargling = false;
+    private enemyState state;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -32,66 +37,58 @@ public class EnemyAI : MonoBehaviour
         animator = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         wanderTimer = wanderInterval;
-        agent.updatePosition = false;
-        agent.updateRotation = false;
         
+        state = enemyState.Idle;
     }
 
     // Update is called once per frame
     void Update()
     {
+        animator.SetFloat("moveSpeed", agent.velocity.magnitude);
+        Debug.Log(state);
+        float distance = Vector3.Distance(player.position, transform.position);
+        wanderTimer += Time.deltaTime;
 
-        if (awake)
+        if (wanderTimer > wanderInterval && state != enemyState.Chasing)
         {
-           // transform.position = agent.nextPosition;
-            animator.SetFloat("moveSpeed", agent.velocity.magnitude);
-            Debug.Log(agent.velocity.magnitude);
-            Debug.DrawRay(transform.position, player.position - transform.position + Vector3.up, Color.red);
-            Physics.Raycast(transform.position, player.position - transform.position + Vector3.up, out RaycastHit hit, Mathf.Infinity, enemyMask);
-            //Debug.Log("Raycast hit: " + hit.collider?.gameObject.name);
-            //if (rend.isVisible && hit.collider.gameObject.tag.Equals("Player"))
-            //{
-            //    agent.isStopped = true;
-            //    Debug.Log("Enemy is visible to the player, stopping movement.");
-            //}
-            //else
-            //{
-            //    agent.isStopped = false;
-            //    Debug.Log("Enemy is not visible to the player, resuming movement.");
-            //}
-            float distance = Vector3.Distance(player.position, transform.position);
-            if (distance <= detectionRange)
-            {
-                isInvestigating = false;
-                agent.SetDestination(player.position);
-                agent.speed = 2f;
-                animator.SetBool("chasing", true);
-                //animator.speed = 3f;
-                return;
-            }
-            else agent.speed = 1.0f;
-            animator.SetBool("chasing", false);
-            wanderTimer += Time.deltaTime;
-            if (wanderTimer >= wanderInterval && !isInvestigating)
-            {
-                Vector3 newPos = RandomNavSphere(transform.position, wanderRadius);
-                agent.SetDestination(newPos);
-                wanderTimer = 0f;
-            }
-            if (isInvestigating)
-            {
-                if (Vector3.Distance(agent.destination, transform.position) < 1f)
-                {
-                    isInvestigating = false;
-                    wanderTimer = 0f;
-                }
-            }
-            if(!isGargling)
-            {
-                isGargling = true;
-                StartCoroutine(Gargle());
-            }
+            wanderTimer = 0;
+            agent.destination = RandomNavSphere(transform.position, wanderRadius);
+            agent.speed = 1f;
+            ChangeState(enemyState.Wandering);
         }
+
+        if (distance <= detectionRange)
+        {
+            agent.destination = player.position;
+            agent.speed = 3f;
+            ChangeState(enemyState.Chasing);
+
+        }
+        else if (state == enemyState.Chasing && distance > detectionRange) 
+        {
+            agent.ResetPath();
+            ChangeState(enemyState.Idle);
+        }
+
+        if (agent.destination == agent.transform.position && state != enemyState.Chasing)
+        {
+            
+            ChangeState(enemyState.Idle);
+        }
+
+
+        if(!isGargling)
+        {
+            isGargling = true;
+            StartCoroutine(Gargle());
+        }
+        
+    }
+
+   
+    private void ChangeState(enemyState newState)
+    {
+        state = newState;
     }
 
     public static Vector3 RandomNavSphere(Vector3 origin, float dist)
@@ -114,7 +111,7 @@ public class EnemyAI : MonoBehaviour
         if (awake) {
             if (other.CompareTag("Pulse"))
             {
-                isInvestigating = true;
+                //isInvestigating = true;
                 agent.SetDestination(other.transform.position);
             }
         }
