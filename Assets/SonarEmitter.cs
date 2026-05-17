@@ -18,6 +18,7 @@ public class SonarEmitter : MonoBehaviour
         
         Debug.Log(src.gameObject.name);
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        pulseSound = Resources.Load<AudioClip>("Audio/sonarPulse");
         //if (automatic)
         //    InvokeRepeating(nameof(EmitPulse), 0f, defaultPulseInterval);
     }

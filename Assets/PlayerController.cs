@@ -45,6 +45,7 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         cameraOrigin = Camera.main.transform;
         controller = GetComponent<CharacterController>();
+        footstep = Resources.Load<AudioClip>("Audio/footsteps");
     }
 
     // Update is called once per frame

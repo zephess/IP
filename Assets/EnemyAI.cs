@@ -44,11 +44,12 @@ public class EnemyAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!awake) return;
         animator.SetFloat("moveSpeed", agent.velocity.magnitude);
-        Debug.Log(state);
+       // Debug.Log(state);
         float distance = Vector3.Distance(player.position, transform.position);
         wanderTimer += Time.deltaTime;
-
+       // animator.SetFloat("moveSpeed", 1f);
         if (wanderTimer > wanderInterval && state != enemyState.Chasing)
         {
             wanderTimer = 0;
@@ -82,10 +83,10 @@ public class EnemyAI : MonoBehaviour
             isGargling = true;
             StartCoroutine(Gargle());
         }
-        
+       // Debug.Log(animator.rootPosition);    
     }
-
    
+
     private void ChangeState(enemyState newState)
     {
         state = newState;
@@ -111,7 +112,7 @@ public class EnemyAI : MonoBehaviour
         if (awake) {
             if (other.CompareTag("Pulse"))
             {
-                //isInvestigating = true;
+                state = enemyState.Chasing;
                 agent.SetDestination(other.transform.position);
             }
         }
