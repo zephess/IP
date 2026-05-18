@@ -6,6 +6,8 @@ Shader "Custom/SonarWireframe"
         _LineWidth ("Line Width", Float) = 5
         _PulseWidth ("Pulse Width", Float) = 10
         _PulseSpeed ("Pulse Speed", Float) = 20
+        _PulseFade ("Pulse Fade", Float) = 1
+        _PulseRadius ("Pulse Radius", Float) = 40
     }
 
     SubShader
@@ -34,11 +36,15 @@ Shader "Custom/SonarWireframe"
             int _PulseCount;
             float4 _PulseOrigins[MAX_PULSES];
             float _PulseTimes[MAX_PULSES];
+            float _PulseRadii[MAX_PULSES];
+            float _PulseFades[MAX_PULSES];
+            float _PulseWidths[MAX_PULSES];
 
             float _PulseSpeed;
             float _PulseWidth;
             float4 _LineColor;
             float _LineWidth;
+            
 
             struct appdata
             {
@@ -94,23 +100,24 @@ Shader "Custom/SonarWireframe"
             }
 
             float4 frag(g2f i) : SV_Target
-            {
-                
+{
                 float visible = 0;
 
                 for (int p = 0; p < _PulseCount; p++)
                 {
                     float dist = distance(i.worldPos, _PulseOrigins[p].xyz);
 
-                    float wave = _PulseSpeed * (_Time.y - _PulseTimes[p]);
+                    float radius = _PulseRadii[p];
+                    float fade   = _PulseFades[p];
 
-                    float band = abs(dist - wave);
+                    float band = abs(dist - radius);
+                    float ring = smoothstep(_PulseWidths[p], 0, band);
 
-                    visible += smoothstep(_PulseWidth, 0, band);
+                    visible += ring * fade;
                 }
 
                 visible = saturate(visible);
-               
+
                 float edge = 1 - edgeFactor(i.bary);
                 return _LineColor * edge * visible;
             }
