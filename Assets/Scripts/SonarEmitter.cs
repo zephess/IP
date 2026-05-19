@@ -1,5 +1,7 @@
 
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class SonarEmitter : MonoBehaviour
 {
@@ -13,6 +15,7 @@ public class SonarEmitter : MonoBehaviour
     public AudioClip pulseSound;
     private float defaultPulseInterval = 3f;
     private float timer = 0f;
+    public Volume vol;
     void Start()
     {
         
@@ -47,6 +50,17 @@ public class SonarEmitter : MonoBehaviour
         }
         if(GetDistanceToClosest() <= dangerDistance)
         {
+            vol.profile.TryGet(out ChromaticAberration crmab);
+            if (crmab != null)
+            {
+                Debug.Log(crmab.intensity.value);
+                crmab.intensity.value = Mathf.Lerp(1.0f, 0.0f, GetDistanceToClosest()/dangerDistance);
+            }
+            vol.profile.TryGet(out Bloom bloom);
+            if (bloom != null)
+            {
+                bloom.tint.value = Color.Lerp(Color.red, Color.aquamarine, GetDistanceToClosest() / dangerDistance);
+            }
             lerpedColor = Color.Lerp(Color.red, Color.aquamarine, GetDistanceToClosest()/dangerDistance);
             pulseMaterial.SetColor("_LineColor", lerpedColor);
         }
