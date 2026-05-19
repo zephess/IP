@@ -23,8 +23,12 @@ public class EnemyAI : MonoBehaviour
     private AudioClip gargle1;
     private AudioClip gargle2;
     private AudioClip gargle3;
+    private AudioClip screech;
     private bool isGargling = false;
     private enemyState state;
+    private float chaseTimeout = 5f;
+    private float chaseTimer = 0f;
+    private bool chaseStarted = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -32,6 +36,7 @@ public class EnemyAI : MonoBehaviour
         gargle1 = Resources.Load<AudioClip>("Audio/monsterGargle1");
         gargle2 = Resources.Load<AudioClip>("Audio/monsterGargle2");
         gargle3 = Resources.Load<AudioClip>("Audio/monsterGargle3");
+        screech = Resources.Load<AudioClip>("Audio/chaseScreech");
         rend = GetComponent<Renderer>();
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
@@ -45,8 +50,14 @@ public class EnemyAI : MonoBehaviour
     void Update()
     {
         if(!awake) return;
+        if (state == enemyState.Chasing && !chaseStarted)
+        {
+            chaseStarted = true;
+            audioSource.pitch = Random.Range(0.8f, 1.2f);
+            audioSource.PlayOneShot(screech);
+        }
         animator.SetFloat("moveSpeed", agent.velocity.magnitude);
-       // Debug.Log(state);
+        //Debug.Log(state);
         float distance = Vector3.Distance(player.position, transform.position);
         wanderTimer += Time.deltaTime;
        // animator.SetFloat("moveSpeed", 1f);
@@ -60,6 +71,7 @@ public class EnemyAI : MonoBehaviour
 
         if (distance <= detectionRange)
         {
+            chaseTimer = 0f;
             agent.destination = player.position;
             agent.speed = 3f;
             ChangeState(enemyState.Chasing);
@@ -67,8 +79,14 @@ public class EnemyAI : MonoBehaviour
         }
         else if (state == enemyState.Chasing && distance > detectionRange) 
         {
-            agent.ResetPath();
-            ChangeState(enemyState.Idle);
+            chaseTimer += Time.deltaTime;
+            if (chaseTimer >= chaseTimeout)
+            {
+                agent.ResetPath();
+                ChangeState(enemyState.Idle);
+                chaseTimer = 0f;
+                chaseStarted = false;
+            }
         }
 
         if (agent.destination == agent.transform.position && state != enemyState.Chasing)
@@ -90,6 +108,7 @@ public class EnemyAI : MonoBehaviour
     private void ChangeState(enemyState newState)
     {
         state = newState;
+       
     }
 
     public static Vector3 RandomNavSphere(Vector3 origin, float dist)
@@ -113,7 +132,9 @@ public class EnemyAI : MonoBehaviour
             if (other.CompareTag("Pulse"))
             {
                 state = enemyState.Chasing;
+                agent.speed = 3f;
                 agent.SetDestination(other.transform.position);
+                chaseTimer = 0f;
             }
         }
     }
