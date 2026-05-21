@@ -71,7 +71,7 @@ public class SonarEmitter : MonoBehaviour
 
     }
 
-    void EmitPulse()
+    public void EmitPulse()
     {
         if (SonarPulseManager.Instance != null)
         {
@@ -104,5 +104,15 @@ public class SonarEmitter : MonoBehaviour
         float t = Mathf.InverseLerp(5f, dangerDistance, distance);
         float interval = Mathf.Lerp(1f, defaultPulseInterval, t);
         return interval;
+    }
+
+    public void DisableEmitter()
+    {
+        this.enabled = false;
+    }
+
+    public void EnableEmitter()
+    {
+        this.enabled = true;
     }
 }

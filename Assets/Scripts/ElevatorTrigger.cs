@@ -5,7 +5,7 @@ using UnityEngine;
 public class ElevatorTrigger : MonoBehaviour
 {
     private AudioSource src;
-    private Rigidbody rb;
+    private Rigidbody[] rbs;
     private Rigidbody rb2;
     private Rigidbody rb3;
     public bool crashes;
@@ -18,13 +18,17 @@ public class ElevatorTrigger : MonoBehaviour
     public float distanceToMove;
     public Light flickerLight; // Reference to the light you want to flicker
     public Material sonarRevealMat; // Reference to the material you want to apply to the elevator after it moves
+    private AudioClip elevatorFalling;
+    private AudioClip elevatorAmbience;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         src = elevator.GetComponent<AudioSource>();
-        rb = elevator.GetComponent<Rigidbody>();
+        rbs = elevator.GetComponentsInChildren<Rigidbody>();
         rb2 = elevatorGrate.GetComponent<Rigidbody>();
         rb3 = elevatorGrate2.GetComponent<Rigidbody>();
+        elevatorFalling = Resources.Load<AudioClip>("Audio/elevatorFalling");
+        elevatorAmbience = Resources.Load<AudioClip>("Audio/elevatorAmbience");
         //StartCoroutine(FlickerLight()); // Flicker the light for 10 seconds with a 0.5 second interval
     }
 
@@ -74,6 +78,7 @@ public class ElevatorTrigger : MonoBehaviour
     private IEnumerator MoveElevator(Transform target, float distance, float time)
     {
         yield return new WaitForSeconds(1f); // Optional delay before moving the elevator
+        src.PlayOneShot(elevatorAmbience); // Play the elevator ambience sound
         Vector3 startPos = target.position;
         Vector3 endPos = new Vector3(target.position.x, target.position.y + distance, target.position.z);
         Renderer renderer = elevator.GetComponent<Renderer>();
@@ -112,10 +117,14 @@ public class ElevatorTrigger : MonoBehaviour
         }
         else
         {
-            rb.isKinematic = false; // Make the elevator's Rigidbody non-kinematic to allow it to be affected by physics
+            src.PlayOneShot(elevatorFalling); // Play the elevator falling sound
+            foreach (Rigidbody rb in rbs)
+            {
+                rb.isKinematic = false; // Make all child Rigidbodies non-kinematic to allow them to be affected by physics
+            }
             rb2.isKinematic = false; // Make the first grate's Rigidbody non-kinematic to allow it to be affected by physics
             rb3.isKinematic = false; // Make the second grate's Rigidbody non-kinematic to allow it to be affected by physics
-            rb.AddExplosionForce(500f, target.position + Vector3.right, 10f); // Apply an explosion force to the elevator to make it crash
+            //rb.AddExplosionForce(500f, target.position + Vector3.right, 10f); // Apply an explosion force to the elevator to make it crash
         }
         StartCoroutine(FlickerLight()); // Start flickering the light after the grate has moved
         

@@ -7,6 +7,7 @@ TagManager:
   - Pulse
   - Enemy
   - ControllerEnable
+  - JumpSequence1
   layers:
   - Default
   - TransparentFX

@@ -35,6 +35,9 @@ public class PlayerController : MonoBehaviour
     private AudioSource src;
     public AudioClip footstep;
     private CharacterController controller;
+    private AudioClip elevatorCrash;
+    private AudioClip sonarSizzle;
+    public GameObject enemyPrefab;
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +49,9 @@ public class PlayerController : MonoBehaviour
         cameraOrigin = Camera.main.transform;
         controller = GetComponent<CharacterController>();
         footstep = Resources.Load<AudioClip>("Audio/footsteps");
+        elevatorCrash = Resources.Load<AudioClip>("Audio/elevatorCrash");
+        sonarSizzle = Resources.Load<AudioClip>("Audio/sonarSizzle");
+
     }
 
     // Update is called once per frame
@@ -106,7 +112,7 @@ public class PlayerController : MonoBehaviour
         }
         if(controller.velocity.magnitude < 0.1f)
         {
-            src.Stop();
+            //src.Stop();
         }
     }
 
@@ -130,11 +136,17 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("ControllerEnable"))
         {
+            
             Debug.Log("Entered elevator trigger");
             SonarPulseManager.Instance.pulseSpeed = 20f;
             transform.SetParent(null); // Unparent the player from the elevator
             EnableController();
             transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f); // Reset the player's rotation to be upright
+        }
+        if (other.tag.Equals("JumpSequence1"))
+        {
+            other.enabled = false;
+            StartCoroutine(JumpscareSequence1());
         }
     }
 
@@ -148,5 +160,35 @@ public class PlayerController : MonoBehaviour
     {
         controller.enabled = true;
         isEnabled = true;
+    }
+
+    private IEnumerator JumpscareSequence1()
+    {
+        ParticleSystem sys = gameObject.GetComponentInChildren<ParticleSystem>();
+        DisableController();
+        SonarEmitter emitter = GetComponentInChildren<SonarEmitter>();
+        if (emitter != null)
+        {
+            emitter.DisableEmitter();
+        }
+        sys.Play();
+        src.PlayOneShot(sonarSizzle);
+        yield return new WaitForSeconds(sys.main.duration);
+        src.Stop();
+        GameObject enemyInst = Instantiate(enemyPrefab, transform.position + transform.forward  - transform.up, Quaternion.identity);
+        enemyInst.transform.LookAt(transform);
+
+        emitter.EnableEmitter();
+        SonarPulseManager.Instance.pulseSpeed = 30f;
+        emitter.EmitPulse();
+        src.PlayOneShot(Resources.Load<AudioClip>("Audio/chaseScreech"), 1.4f);
+        emitter.DisableEmitter();
+        
+        yield return new WaitForSeconds(1f);
+        Destroy(enemyInst);
+        emitter.EnableEmitter();
+        EnableController();
+        SonarPulseManager.Instance.pulseSpeed = 10f;
+
     }
 }
