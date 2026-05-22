@@ -29,7 +29,7 @@ public class mushroomEmit : MonoBehaviour
     {
         src = GetComponent<AudioSource>();
         pulseSound = Resources.Load<AudioClip>("Audio/sonarPulse");
-        
+        pulseManager = SonarPulseManager.Instance;
     }
 
     // Update is called once per frame

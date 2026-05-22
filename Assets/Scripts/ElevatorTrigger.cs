@@ -117,6 +117,7 @@ public class ElevatorTrigger : MonoBehaviour
         }
         else
         {
+            yield return new WaitForSeconds(8f);
             src.PlayOneShot(elevatorFalling); // Play the elevator falling sound
             foreach (Rigidbody rb in rbs)
             {
@@ -126,7 +127,7 @@ public class ElevatorTrigger : MonoBehaviour
             rb3.isKinematic = false; // Make the second grate's Rigidbody non-kinematic to allow it to be affected by physics
             //rb.AddExplosionForce(500f, target.position + Vector3.right, 10f); // Apply an explosion force to the elevator to make it crash
         }
-        StartCoroutine(FlickerLight()); // Start flickering the light after the grate has moved
+        //StartCoroutine(FlickerLight()); // Start flickering the light after the grate has moved
         
         //player.gameObject.GetComponent<PlayerController>().EnableController(); // Re-enable the CharacterController to allow player movement
 
@@ -134,14 +135,5 @@ public class ElevatorTrigger : MonoBehaviour
 
     }
 
-    private IEnumerator FlickerLight()
-    {
-        while (true)
-        {
-            flickerLight.enabled = false; // Turn off the light
-            yield return new WaitForSeconds(Random.Range(0.3f, 0.8f)); // Wait for a random time between 0.1 and 0.5 seconds
-            flickerLight.enabled = true; // Turn on the light
-            yield return new WaitForSeconds(Random.Range(0.3f, 0.8f)); // Wait for a random time between 0.1 and 0.5 seconds
-        }
-    }
+   
 }

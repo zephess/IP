@@ -5,6 +5,8 @@ using UnityEngine.Rendering.Universal;
 
 public class SonarEmitter : MonoBehaviour
 {
+
+    
     public float pulseInterval = 3f;
     public bool automatic = true;
     public Material pulseMaterial;
@@ -16,11 +18,11 @@ public class SonarEmitter : MonoBehaviour
     private float defaultPulseInterval = 3f;
     private float timer = 0f;
     public Volume vol;
+    public float cooldown = 1f;
     void Start()
     {
         
         Debug.Log(src.gameObject.name);
-        enemies = GameObject.FindGameObjectsWithTag("Enemy");
         pulseSound = Resources.Load<AudioClip>("Audio/sonarPulse");
         //if (automatic)
         //    InvokeRepeating(nameof(EmitPulse), 0f, defaultPulseInterval);
@@ -28,6 +30,11 @@ public class SonarEmitter : MonoBehaviour
 
     void Update()
     {
+        enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        if(cooldown >= 0f)
+        {
+            cooldown -= Time.deltaTime;
+        }
         //enemies = GameObject.FindGameObjectsWithTag("Enemy");
         timer += Time.deltaTime;
         if(automatic && timer >= pulseInterval)
@@ -40,9 +47,10 @@ public class SonarEmitter : MonoBehaviour
         {
             pulseInterval = GetPulseInterval();
         }
-        if (!automatic && Input.GetKeyDown(KeyCode.Q))
+        if (!automatic && Input.GetKeyDown(KeyCode.Q) && cooldown <= 0)
         {
             EmitPulse();
+            cooldown = 1f;
         }
         if (GetDistanceToClosest() < 5f)
         {
@@ -73,13 +81,15 @@ public class SonarEmitter : MonoBehaviour
 
     public void EmitPulse()
     {
-        if (SonarPulseManager.Instance != null)
+        if (SonarPulseManager.Instance != null )
         {
             SonarPulseManager.Instance.EmitPulse(transform.position);
+            
         }
         if (src != null)
         {
             src.PlayOneShot(pulseSound);
+
         }
     }
 

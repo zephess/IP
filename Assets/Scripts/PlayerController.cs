@@ -152,7 +152,7 @@ public class PlayerController : MonoBehaviour
             other.enabled = false;
             StartCoroutine(JumpscareSequence1());
         }
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") || other.CompareTag("Hazard"))
         {
             Debug.Log("collided with enemy");
             StartCoroutine(GameOver());
@@ -206,8 +206,9 @@ public class PlayerController : MonoBehaviour
     }
     private IEnumerator GameOver()
     {
-        DisableController();
+        src.PlayOneShot(Resources.Load<AudioClip>("Audio/grunt"));
         cnv.alpha = 1f;
+        DisableController();
         
         yield return new WaitForSeconds(3f);
         SceneManager.LoadScene("menu");

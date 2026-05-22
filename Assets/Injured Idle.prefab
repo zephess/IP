@@ -1387,14 +1387,14 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 7.09
+  m_Radius: 7.2
   m_Height: 39.37
   m_Direction: 1
-  m_Center: {x: 0, y: 22.86, z: 0}
+  m_Center: {x: 0, y: 19.2, z: 3.99}
 --- !u!54 &6235432520603423470
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1485,7 +1485,7 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5

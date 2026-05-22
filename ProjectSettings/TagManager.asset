@@ -8,6 +8,8 @@ TagManager:
   - Enemy
   - ControllerEnable
   - JumpSequence1
+  - Hazard
+  - DialogueTrigger
   layers:
   - Default
   - TransparentFX
