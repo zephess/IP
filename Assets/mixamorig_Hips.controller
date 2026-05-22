@@ -8,7 +8,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Standing Up
-  m_Speed: 3.02
+  m_Speed: 3
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -4490400890671223462}

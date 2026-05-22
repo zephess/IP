@@ -143,7 +143,7 @@ public class EnemyAI : MonoBehaviour
     {
         animator.SetTrigger("wakeup");
         //Debug.Log(animator.GetCurrentAnimatorStateInfo(1).length);
-        yield return new WaitForSeconds(1.5f); 
+        yield return new WaitForSeconds(14.5f / 3f); 
         awake = true;
     }
 

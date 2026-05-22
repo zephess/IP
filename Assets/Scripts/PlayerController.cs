@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -38,6 +39,8 @@ public class PlayerController : MonoBehaviour
     private AudioClip elevatorCrash;
     private AudioClip sonarSizzle;
     public GameObject enemyPrefab;
+    private CanvasGroup cnv;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -51,7 +54,7 @@ public class PlayerController : MonoBehaviour
         footstep = Resources.Load<AudioClip>("Audio/footsteps");
         elevatorCrash = Resources.Load<AudioClip>("Audio/elevatorCrash");
         sonarSizzle = Resources.Load<AudioClip>("Audio/sonarSizzle");
-
+        cnv = GameObject.Find("Canvas").GetComponent<CanvasGroup>();
     }
 
     // Update is called once per frame
@@ -134,6 +137,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        
         if (other.CompareTag("ControllerEnable"))
         {
             
@@ -148,6 +152,15 @@ public class PlayerController : MonoBehaviour
             other.enabled = false;
             StartCoroutine(JumpscareSequence1());
         }
+        if (other.CompareTag("Enemy"))
+        {
+            Debug.Log("collided with enemy");
+            StartCoroutine(GameOver());
+        }
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+
     }
 
     public void DisableController()
@@ -189,6 +202,16 @@ public class PlayerController : MonoBehaviour
         emitter.EnableEmitter();
         EnableController();
         SonarPulseManager.Instance.pulseSpeed = 10f;
+
+    }
+    private IEnumerator GameOver()
+    {
+        DisableController();
+        cnv.alpha = 1f;
+        
+        yield return new WaitForSeconds(3f);
+        SceneManager.LoadScene("menu");
+        
 
     }
 }

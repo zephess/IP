@@ -53,7 +53,7 @@ public class SonarEmitter : MonoBehaviour
             vol.profile.TryGet(out ChromaticAberration crmab);
             if (crmab != null)
             {
-                Debug.Log(crmab.intensity.value);
+                //Debug.Log(crmab.intensity.value);
                 crmab.intensity.value = Mathf.Lerp(1.0f, 0.0f, GetDistanceToClosest()/dangerDistance);
             }
             vol.profile.TryGet(out Bloom bloom);
