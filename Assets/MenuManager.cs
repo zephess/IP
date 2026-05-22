@@ -1,6 +1,6 @@
 using TMPro;
-using UnityEditor;
-using UnityEditor.SearchService;
+
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -59,28 +59,28 @@ public class MenuManager : MonoBehaviour
         switch(slider.value)
         {
             case 0:
-                SonarPulseManager.Instance.pulseSpeed = 0f;
-                SonarPulseManager.Instance.pulseWidth = 400f;
+                SonarPulseManager.Instance.SetPulseSpeed(0f);
+                SonarPulseManager.Instance.SetPulseWidth(400f);
                 difficultyText.text = "Difficulty: Peaceful\nSonar will light up the entire cave. Not recommended for players that want the full experience.";
                 break;
             case 1:
-                SonarPulseManager.Instance.pulseSpeed = 10f;
-                SonarPulseManager.Instance.pulseWidth = 10f;
+                SonarPulseManager.Instance.SetPulseSpeed(10f);
+                SonarPulseManager.Instance.SetPulseWidth(10f);
                 difficultyText.text = "Difficulty: Easy\nSonar will light up a moderate area and travel slowly. Suitable for players who want an easy experience.";
                 break;
             case 2:
-                SonarPulseManager.Instance.pulseSpeed = 15f;
-                SonarPulseManager.Instance.pulseWidth = 7.5f;
+                SonarPulseManager.Instance.SetPulseSpeed(15f);
+                SonarPulseManager.Instance.SetPulseWidth(7.5f);
                 difficultyText.text = "Difficulty: Medium\nSonar will light up a smaller area and travel at a moderate speed. The intended way to play the game.";
                 break;
             case 3:
-                SonarPulseManager.Instance.pulseSpeed = 30f;
-                SonarPulseManager.Instance.pulseWidth = 7.5f;
+                SonarPulseManager.Instance.SetPulseSpeed(30f);
+                SonarPulseManager.Instance.SetPulseWidth(7.5f);
                 difficultyText.text = "Difficulty: Hard\nSonar will light up a very small area and travel quickly. Suitable for players seeking a challenging experience.";
                 break;
             case 4:
-                SonarPulseManager.Instance.pulseSpeed = 60f;
-                SonarPulseManager.Instance.pulseWidth = 7.5f;
+                SonarPulseManager.Instance.SetPulseSpeed(60f);
+                SonarPulseManager.Instance.SetPulseWidth(7.5f);
                 difficultyText.text = "Difficulty: Insane\nSonar will light up an extremely small area and travel at an extremely fast speed. Not recommended.";
                 break;
             }

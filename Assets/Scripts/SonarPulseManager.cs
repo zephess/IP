@@ -32,8 +32,14 @@ public class SonarPulseManager : MonoBehaviour
 
     void Awake()
     {
-        Instance = this;
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
         pulseOrigins = new Vector4[maxPulses];
         pulseTimes = new float[maxPulses];
         pulseRadii = new float[maxPulses];
@@ -108,5 +114,14 @@ public class SonarPulseManager : MonoBehaviour
         Shader.SetGlobalFloatArray("_PulseRadii", pulseRadii);
         Shader.SetGlobalFloatArray("_PulseFades", pulseFades);
         Shader.SetGlobalFloatArray("_PulseWidths", pulseWidths);
+    }
+    public void SetPulseSpeed(float newSpeed)
+    {
+        pulseSpeed = newSpeed;
+    }
+
+    public void SetPulseWidth(float newWidth)
+    {
+        pulseWidth = newWidth;
     }
 }
