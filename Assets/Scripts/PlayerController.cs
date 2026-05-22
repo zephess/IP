@@ -142,7 +142,7 @@ public class PlayerController : MonoBehaviour
         {
             
             Debug.Log("Entered elevator trigger");
-            SonarPulseManager.Instance.pulseSpeed = 20f;
+            //SonarPulseManager.Instance.pulseSpeed = 20f;
             transform.SetParent(null); // Unparent the player from the elevator
             EnableController();
             transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f); // Reset the player's rotation to be upright
@@ -192,7 +192,7 @@ public class PlayerController : MonoBehaviour
         enemyInst.transform.LookAt(transform);
 
         emitter.EnableEmitter();
-        SonarPulseManager.Instance.pulseSpeed = 30f;
+        //SonarPulseManager.Instance.pulseSpeed = 30f;
         emitter.EmitPulse();
         src.PlayOneShot(Resources.Load<AudioClip>("Audio/chaseScreech"), 1.4f);
         emitter.DisableEmitter();
@@ -201,7 +201,7 @@ public class PlayerController : MonoBehaviour
         Destroy(enemyInst);
         emitter.EnableEmitter();
         EnableController();
-        SonarPulseManager.Instance.pulseSpeed = 10f;
+       // SonarPulseManager.Instance.pulseSpeed = 10f;
 
     }
     private IEnumerator GameOver()

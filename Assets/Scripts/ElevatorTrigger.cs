@@ -46,7 +46,7 @@ public class ElevatorTrigger : MonoBehaviour
             other.transform.SetParent(elevator.transform); // Parent the player to the elevator
             other.gameObject.GetComponent<PlayerController>().DisableController(); // Disable the CharacterController to prevent movement issues
             player = other.gameObject; // Store reference to the player
-            SonarPulseManager.Instance.pulseSpeed = 10f;
+            //SonarPulseManager.Instance.pulseSpeed = 10f;
             StartCoroutine(MoveGrate(elevatorGrate.transform, 0.9f, 4f)); // Move the grate up by 3 units over 2 seconds
 
         }

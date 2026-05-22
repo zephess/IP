@@ -73,7 +73,7 @@ public class EnemyAI : MonoBehaviour
         {
             chaseTimer = 0f;
             agent.destination = player.position;
-            agent.speed = 3f;
+            agent.speed = 2f;
             ChangeState(enemyState.Chasing);
 
         }
@@ -132,7 +132,7 @@ public class EnemyAI : MonoBehaviour
             if (other.CompareTag("Pulse"))
             {
                 state = enemyState.Chasing;
-                agent.speed = 3f;
+                agent.speed = 2f;
                 agent.SetDestination(other.transform.position);
                 chaseTimer = 0f;
             }

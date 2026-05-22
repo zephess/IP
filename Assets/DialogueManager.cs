@@ -33,7 +33,7 @@ public class DialogueManager : MonoBehaviour
         txt[10] = "What the hell is-----........JOIN US........";
         txt[11] = ".......................";
         txt[12] = "JOIN US JOIN US JOIN US JOIN US JOIN US";
-        txt[13] = "YOU WILL BECOME ONE";
+        txt[13] = "WE WILL BECOME ONE";
 
     }
 
@@ -87,7 +87,7 @@ public class DialogueManager : MonoBehaviour
                 text.text += c;
                 if (textIndex >= 10)
                 {
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.22f);
                 }
                 else
                 {
