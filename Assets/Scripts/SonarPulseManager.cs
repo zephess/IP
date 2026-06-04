@@ -46,6 +46,10 @@ public class SonarPulseManager : MonoBehaviour
         pulseFades = new float[maxPulses];
         pulseWidths = new float[maxPulses];
     }
+    private void Start()
+    {
+        detectionCollider = gameObject.GetComponentInChildren<SphereCollider>();
+    }
 
     public void EmitPulse(Vector3 origin)
     {

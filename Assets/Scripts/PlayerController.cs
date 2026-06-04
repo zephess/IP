@@ -44,7 +44,6 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-       // rb = GetComponent<Rigidbody>();
         src = GetComponent<AudioSource>();
         col = GetComponent<Collider>();
         cameraTransform = Camera.main.transform;
@@ -59,27 +58,14 @@ public class PlayerController : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        
+    {   
         timer += Time.deltaTime;
-        //if (rb.linearVelocity.magnitude > 3f)
-        //{
-            //Camera.main.transform.localPosition = new Vector3(Camera.main.transform.localPosition.x , cameraOrigin.localPosition.y + Mathf.Sin(timer) * bobAmount, Camera.main.transform.localPosition.z);
-       // }
-        
-            //Debug.Log(speed);
-
-        
-
-
-       // Debug.Log(rb.linearVelocity.magnitude);
-        
         HandleLook();
     }
 
     private void FixedUpdate()
     {
-        if (!isEnabled) return;
+        if (!isEnabled) return; // If the controller is disabled, skip the movement code
 
         Vector2 input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         Vector3 move = new Vector3(input.x, 0, input.y);
@@ -113,19 +99,15 @@ public class PlayerController : MonoBehaviour
                 timer = 0f;
             }
         }
-        if(controller.velocity.magnitude < 0.1f)
-        {
-            //src.Stop();
-        }
     }
 
 
    
 
 
-    private void HandleLook()
+    private void HandleLook() // Handles the player's looking around with the mouse, including clamping the vertical rotation and rotating the player horizontally based on mouse input
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime; 
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
         xRotation -= mouseY;
@@ -142,44 +124,39 @@ public class PlayerController : MonoBehaviour
         {
             
             Debug.Log("Entered elevator trigger");
-            //SonarPulseManager.Instance.pulseSpeed = 20f;
             transform.SetParent(null); // Unparent the player from the elevator
             EnableController();
             transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y, 0f); // Reset the player's rotation to be upright
         }
-        if (other.tag.Equals("JumpSequence1"))
+        if (other.tag.Equals("JumpSequence1")) // If the player enters the trigger for the first jumpscare sequence, disable the trigger and start the jumpscare sequence
         {
             other.enabled = false;
             StartCoroutine(JumpscareSequence1());
         }
-        if (other.CompareTag("Enemy") || other.CompareTag("Hazard"))
+        if (other.CompareTag("Enemy") || other.CompareTag("Hazard")) // If the player collides with an enemy or hazard, start the game over sequence
         {
             Debug.Log("collided with enemy");
             StartCoroutine(GameOver());
         }
     }
-    private void OnCollisionEnter(Collision collision)
-    {
 
-    }
-
-    public void DisableController()
+    public void DisableController() // Disables the character controller and sets the isEnabled flag to false
     {
         controller.enabled = false;
         isEnabled = false;
     }
 
-    public void EnableController()
+    public void EnableController() // Enables the character controller and sets the isEnabled flag to true
     {
         controller.enabled = true;
         isEnabled = true;
     }
 
-    private IEnumerator JumpscareSequence1()
+    private IEnumerator JumpscareSequence1()    // Jumpscare sequence that spawns an enemy and plays a sonar pulse effect, then destroys the enemy after a short time
     {
         ParticleSystem sys = gameObject.GetComponentInChildren<ParticleSystem>();
-        DisableController();
-        SonarEmitter emitter = GetComponentInChildren<SonarEmitter>();
+        DisableController(); 
+        SonarEmitter emitter = GetComponentInChildren<SonarEmitter>(); 
         if (emitter != null)
         {
             emitter.DisableEmitter();
@@ -192,7 +169,7 @@ public class PlayerController : MonoBehaviour
         enemyInst.transform.LookAt(transform);
 
         emitter.EnableEmitter();
-        //SonarPulseManager.Instance.pulseSpeed = 30f;
+        
         emitter.EmitPulse();
         src.PlayOneShot(Resources.Load<AudioClip>("Audio/chaseScreech"), 1.4f);
         emitter.DisableEmitter();
@@ -201,10 +178,9 @@ public class PlayerController : MonoBehaviour
         Destroy(enemyInst);
         emitter.EnableEmitter();
         EnableController();
-       // SonarPulseManager.Instance.pulseSpeed = 10f;
 
     }
-    private IEnumerator GameOver()
+    private IEnumerator GameOver() // Game over sequence that plays a sound effect, shows a game over screen, and then returns to the main menu after a short delay
     {
         src.PlayOneShot(Resources.Load<AudioClip>("Audio/grunt"));
         cnv.alpha = 1f;

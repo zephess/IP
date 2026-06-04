@@ -49,19 +49,20 @@ public class EnemyAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!awake) return;
+        if(!awake) return; // If the enemy is not awake, do not execute any of the AI behavior in the Update function
         if (state == enemyState.Chasing && !chaseStarted)
         {
             chaseStarted = true;
             audioSource.pitch = Random.Range(0.8f, 1.2f);
             audioSource.PlayOneShot(screech);
         }
+
         animator.SetFloat("moveSpeed", agent.velocity.magnitude);
-        //Debug.Log(state);
+      
         float distance = Vector3.Distance(player.position, transform.position);
         wanderTimer += Time.deltaTime;
-       // animator.SetFloat("moveSpeed", 1f);
-        if (wanderTimer > wanderInterval && state != enemyState.Chasing)
+      
+        if (wanderTimer > wanderInterval && state != enemyState.Chasing) // If the wander timer has exceeded the wander interval and the enemy is not currently chasing the player, find a new random destination for the enemy to wander to
         {
             wanderTimer = 0;
             agent.destination = RandomNavSphere(transform.position, wanderRadius);
@@ -69,7 +70,7 @@ public class EnemyAI : MonoBehaviour
             ChangeState(enemyState.Wandering);
         }
 
-        if (distance <= detectionRange)
+        if (distance <= detectionRange) // If the player is within detection range and the enemy is not currently chasing the player, start chasing the player
         {
             chaseTimer = 0f;
             agent.destination = player.position;
@@ -77,7 +78,7 @@ public class EnemyAI : MonoBehaviour
             ChangeState(enemyState.Chasing);
 
         }
-        else if (state == enemyState.Chasing && distance > detectionRange) 
+        else if (state == enemyState.Chasing && distance > detectionRange)  // If the enemy is currently chasing the player but the player has moved out of detection range, start the chase timeout timer
         {
             chaseTimer += Time.deltaTime;
             if (chaseTimer >= chaseTimeout)
@@ -89,29 +90,29 @@ public class EnemyAI : MonoBehaviour
             }
         }
 
-        if (agent.destination == agent.transform.position && state != enemyState.Chasing)
+        if (agent.destination == agent.transform.position && state != enemyState.Chasing) // If the enemy has reached its destination and is not currently chasing the player, change its state to idle
         {
             
             ChangeState(enemyState.Idle);
         }
 
 
-        if(!isGargling)
+        if(!isGargling) // If the enemy is not currently gargling, start the gargle coroutine to play a random gargle sound at random intervals
         {
             isGargling = true;
             StartCoroutine(Gargle());
         }
-       // Debug.Log(animator.rootPosition);    
+      
     }
    
 
-    private void ChangeState(enemyState newState)
+    private void ChangeState(enemyState newState) // Function to change the enemy's state, which is used to control its behavior in the Update function
     {
         state = newState;
        
     }
 
-    public static Vector3 RandomNavSphere(Vector3 origin, float dist)
+    public static Vector3 RandomNavSphere(Vector3 origin, float dist) // Function to find a random point on the NavMesh within a certain radius of the origin point, which is used for the enemy's wandering behavior
     {
         
         Vector3 randDirection = Random.insideUnitSphere * dist;
@@ -121,15 +122,15 @@ public class EnemyAI : MonoBehaviour
         return hit.position;
     }
 
-    public void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other) 
     {
-        if (!awake && other.CompareTag("Pulse"))
+        if (!awake && other.CompareTag("Pulse")) // If the enemy is hit by a pulse and is not already awake, start the wakeup sequence
         {
             StartCoroutine(WakeupSequence());
         }
-        Debug.Log("Enemy hit by pulse!");
+      
         if (awake) {
-            if (other.CompareTag("Pulse"))
+            if (other.CompareTag("Pulse")) // If the enemy is hit by a pulse and is already awake, start chasing the player
             {
                 state = enemyState.Chasing;
                 agent.speed = 2f;
@@ -139,15 +140,14 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    private IEnumerator WakeupSequence()
+    private IEnumerator WakeupSequence() // Coroutine to handle the enemy's wakeup sequence, which plays an animation and then sets the awake flag to true after a delay
     {
         animator.SetTrigger("wakeup");
-        //Debug.Log(animator.GetCurrentAnimatorStateInfo(1).length);
         yield return new WaitForSeconds(14.5f / 3f); 
         awake = true;
     }
 
-    private IEnumerator Gargle()
+    private IEnumerator Gargle() // Coroutine to play a random gargle sound at random intervals, which is used to add atmosphere to the enemy when it is awake
     {
         
             
@@ -169,16 +169,5 @@ public class EnemyAI : MonoBehaviour
         
     }
 
-   
-    //public void OnCollisionEnter(Collision collision)
-    //{
-    //    Debug.Log("Enemy hit by pulse!");
-    //    if (collision.gameObject.CompareTag("Pulse"))
-    //    {
-    //        isInvestigating = true;
-    //        agent.SetDestination(collision.transform.position);
-    //        Destroy(collision.gameObject);
-    //    }
-    //}
 }
 

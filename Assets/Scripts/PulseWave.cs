@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
+/// <summary>
+/// OBSOLETE: This script is no longer used. It was intended to be used for the pulse wave mechanic, but it was not implemented in the end. It is kept here for reference and future use if needed.
+/// </summary>
 public class PulseWave : MonoBehaviour
 {
     private DecalProjector projector;

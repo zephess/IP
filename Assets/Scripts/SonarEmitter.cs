@@ -24,39 +24,40 @@ public class SonarEmitter : MonoBehaviour
         
         Debug.Log(src.gameObject.name);
         pulseSound = Resources.Load<AudioClip>("Audio/sonarPulse");
-        //if (automatic)
-        //    InvokeRepeating(nameof(EmitPulse), 0f, defaultPulseInterval);
+      
     }
 
     void Update()
     {
-        enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        if(cooldown >= 0f)
+        enemies = GameObject.FindGameObjectsWithTag("Enemy"); // Update the list of enemies every frame
+        if (cooldown >= 0f) // Reduce cooldown timer if it's above 0
         {
             cooldown -= Time.deltaTime;
         }
-        //enemies = GameObject.FindGameObjectsWithTag("Enemy");
+       
         timer += Time.deltaTime;
-        if(automatic && timer >= pulseInterval)
+
+        if(automatic && timer >= pulseInterval) // If automatic mode is enabled and the timer has exceeded the pulse interval, emit a pulse
         {
             EmitPulse();
             timer = 0f;
         }
-        //Debug.Log(pulseInterval);
+       
         if (automatic)
         {
             pulseInterval = GetPulseInterval();
         }
-        if (!automatic && Input.GetKeyDown(KeyCode.Q) && cooldown <= 0)
+
+        if (!automatic && Input.GetKeyDown(KeyCode.Q) && cooldown <= 0) // If manual mode is enabled and the Q key is pressed, emit a pulse
         {
             EmitPulse();
             cooldown = 1f;
         }
-        if (GetDistanceToClosest() < 5f)
+        if (GetDistanceToClosest() < 5f) // If the closest enemy is within 5 units, change the pulse color to red
         {
             pulseMaterial.SetColor("_LineColor", Color.red);
         }
-        if(GetDistanceToClosest() <= dangerDistance)
+        if(GetDistanceToClosest() <= dangerDistance) // If the closest enemy is within the danger distance, adjust visual effects based on proximity
         {
             vol.profile.TryGet(out ChromaticAberration crmab);
             if (crmab != null)
@@ -69,22 +70,22 @@ public class SonarEmitter : MonoBehaviour
             {
                 bloom.tint.value = Color.Lerp(Color.red, Color.aquamarine, GetDistanceToClosest() / dangerDistance);
             }
-            lerpedColor = Color.Lerp(Color.red, Color.aquamarine, GetDistanceToClosest()/dangerDistance);
-            pulseMaterial.SetColor("_LineColor", lerpedColor);
+            lerpedColor = Color.Lerp(Color.red, Color.aquamarine, GetDistanceToClosest()/dangerDistance); // Lerp the pulse color from red to aquamarine based on the distance to the closest enemy
+            pulseMaterial.SetColor("_LineColor", lerpedColor); // Set the pulse color to the lerped color
         }
         else
         {
-            pulseMaterial.SetColor("_LineColor", Color.aquamarine);
+            pulseMaterial.SetColor("_LineColor", Color.aquamarine); // Set the pulse color to aquamarine if no enemies are within the danger distance
         }
 
     }
 
-    public void EmitPulse()
+    public void EmitPulse() // Function to emit a sonar pulse, which also plays a sound effect
     {
         if (SonarPulseManager.Instance != null )
         {
-            SonarPulseManager.Instance.EmitPulse(transform.position);
-            
+            SonarPulseManager.Instance.EmitPulse(transform.position); // Emit a pulse from the SonarPulseManager at the position of this emitter
+
         }
         if (src != null)
         {
@@ -93,7 +94,7 @@ public class SonarEmitter : MonoBehaviour
         }
     }
 
-    float GetDistanceToClosest()
+    float GetDistanceToClosest() // Function to calculate the distance to the closest enemy, which is used for adjusting pulse intervals and visual effects
     {
         float closestDistance = Mathf.Infinity;
         Vector3 pos = transform.position;
@@ -108,7 +109,7 @@ public class SonarEmitter : MonoBehaviour
         return closestDistance;
     }
 
-    float GetPulseInterval()
+    float GetPulseInterval() // Function to calculate the pulse interval based on the distance to the closest enemy, which creates a dynamic pulse rate that increases as enemies get closer
     {
         float distance = GetDistanceToClosest();
         float t = Mathf.InverseLerp(5f, dangerDistance, distance);
@@ -116,12 +117,12 @@ public class SonarEmitter : MonoBehaviour
         return interval;
     }
 
-    public void DisableEmitter()
+    public void DisableEmitter() // Function to disable the sonar emitter
     {
         this.enabled = false;
     }
 
-    public void EnableEmitter()
+    public void EnableEmitter() // Function to enable the sonar emitter
     {
         this.enabled = true;
     }

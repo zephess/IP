@@ -9,12 +9,12 @@ public class mushroomEmit : MonoBehaviour
     private bool canEmit = true;
     public float radius = 5f;
 
-    void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other) 
     {
         Debug.Log("Collided with: " + other.gameObject.name);
-        if (other.CompareTag("Pulse"))
+        if (other.CompareTag("Pulse")) // Check if the colliding object has the "Pulse" tag
         {
-            if (canEmit)
+            if (canEmit) // Check if the mushroom can emit a pulse
             {
                 canEmit = false;
                 pulseManager.EmitPulse(transform.position, radius);
@@ -47,6 +47,6 @@ public class mushroomEmit : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(transform.position, radius);
+        Gizmos.DrawWireSphere(transform.position, radius); // Draw a wireframe sphere to visualize the pulse radius in the editor
     }
 }
